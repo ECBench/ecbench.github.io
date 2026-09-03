@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-Commerce Bench: Long-Horizon LLM Agent Benchmark</title>
+<meta name="description" content="E-Commerce Bench evaluates 18 LLM agents running online stores for 365 simulated days, with deterministic demand, negotiation, fraud, and cash flow.">
+<meta name="author" content="Wei Fan, Xinjie Shen, Xudong Guo, Jianhong Tu, Yang Su, Yinger Zhang, Lianghao Deng, Fengyu Wang, Baohua Dong, Yangqiu Song, Dayiheng Liu">
+<meta name="keywords" content="E-Commerce Bench, E-CommerceBench, LLM agent benchmark, long-horizon agents, autonomous agents, e-commerce simulation, AI evaluation, supplier negotiation">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fcfcfb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+
+<link rel="canonical" href="https://ecbench.github.io/">
+<link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="site.webmanifest">
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="preload" href="assets/js/echarts.min.js" as="script" fetchpriority="low">
+<link rel="preload" href="assets/js/app.min.js" as="script" fetchpriority="low">
+<link rel="preload" href="showcase_data.json" as="fetch" fetchpriority="low" crossorigin>
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="E-Commerce Bench">
+<meta property="og:title" content="E-Commerce Bench: Long-Horizon LLM Agent Benchmark">
+<meta property="og:description" content="Evaluate LLM agents over a full simulated year of store operations, negotiation, fraud avoidance, cash-flow management, and long-horizon learning.">
+<meta property="og:url" content="https://ecbench.github.io/">
+<meta property="og:image" content="https://ecbench.github.io/assets/images/social-preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="E-Commerce Bench: a 365-day benchmark for long-horizon LLM agents">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="E-Commerce Bench: Long-Horizon LLM Agent Benchmark">
+<meta name="twitter:description" content="18 LLMs, 365 simulated days, deterministic markets, supplier negotiation, fraud, and cash-flow management.">
+<meta name="twitter:image" content="https://ecbench.github.io/assets/images/social-preview.jpg">
+<meta name="twitter:image:alt" content="E-Commerce Bench: a 365-day benchmark for long-horizon LLM agents">
+
+<meta name="citation_title" content="E-Commerce Bench: Evaluating LLM Agents on Long-Horizon Autonomous Business Operation">
+<meta name="citation_date" content="2026/08/31">
+<meta name="citation_arxiv_id" content="2608.30730">
+<meta name="citation_pdf_url" content="https://arxiv.org/pdf/2608.30730">
+<meta name="citation_public_url" content="https://arxiv.org/abs/2608.30730">
+<meta name="citation_author" content="Wei Fan">
+<meta name="citation_author" content="Xinjie Shen">
+<meta name="citation_author" content="Xudong Guo">
+<meta name="citation_author" content="Jianhong Tu">
+<meta name="citation_author" content="Yang Su">
+<meta name="citation_author" content="Yinger Zhang">
+<meta name="citation_author" content="Lianghao Deng">
+<meta name="citation_author" content="Fengyu Wang">
+<meta name="citation_author" content="Baohua Dong">
+<meta name="citation_author" content="Yangqiu Song">
+<meta name="citation_author" content="Dayiheng Liu">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-99MYJ11YF0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-99MYJ11YF0');
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://ecbench.github.io/#website",
+      "url": "https://ecbench.github.io/",
+      "name": "E-Commerce Bench",
+      "description": "A 365-day long-horizon e-commerce simulation for LLM agent evaluation."
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://doi.org/10.48550/arXiv.2608.30730",
+      "headline": "E-Commerce Bench: Evaluating LLM Agents on Long-Horizon Autonomous Business Operation",
+      "url": "https://arxiv.org/abs/2608.30730",
+      "datePublished": "2026-08-31",
+      "isPartOf": {"@id": "https://ecbench.github.io/#website"},
+      "sameAs": ["https://github.com/QwenLM/E-CommerceBench"],
+      "author": [
+        {"@type": "Person", "name": "Wei Fan"},
+        {"@type": "Person", "name": "Xinjie Shen"},
+        {"@type": "Person", "name": "Xudong Guo"},
+        {"@type": "Person", "name": "Jianhong Tu"},
+        {"@type": "Person", "name": "Yang Su"},
+        {"@type": "Person", "name": "Yinger Zhang"},
+        {"@type": "Person", "name": "Lianghao Deng"},
+        {"@type": "Person", "name": "Fengyu Wang"},
+        {"@type": "Person", "name": "Baohua Dong"},
+        {"@type": "Person", "name": "Yangqiu Song"},
+        {"@type": "Person", "name": "Dayiheng Liu"}
+      ]
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": "https://github.com/QwenLM/E-CommerceBench#software",
+      "name": "E-Commerce Bench",
+      "description": "Open-source benchmark for evaluating LLM agents on year-long autonomous e-commerce operations.",
+      "codeRepository": "https://github.com/QwenLM/E-CommerceBench",
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "programmingLanguage": "Python",
+      "citation": {"@id": "https://doi.org/10.48550/arXiv.2608.30730"}
+    }
+  ]
+}
+</script>
+<noscript><style>.reveal,.reveal-left,.reveal-stagger>*{opacity:1!important;transform:none!important}</style></noscript>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ============ STICKY NAV ============ -->
+<nav class="topnav" id="topnav" aria-label="Primary navigation">
+  <a class="brand" href="#overview" aria-label="E-Commerce Bench home">E-Commerce Bench</a>
+  <a href="#overview" data-section="overview">Overview</a>
+  <a href="#balance" data-section="balance">Balance</a>
+  <a href="#profile" data-section="profile">Capability Profile</a>
+  <a href="#methodology" data-section="methodology">Methodology</a>
+  <a href="#daylife" data-section="daylife">Day in the Life</a>
+  <a href="#nego-compare" data-section="nego-compare">Nego Compare</a>
+  <a href="#nego" data-section="nego">Negotiation</a>
+  <a href="#fraud" data-section="fraud">Fraud Detection</a>
+  <a href="#tools" data-section="tools">Tool Usage</a>
+  <a href="#terms" data-section="terms">Leaderboard</a>
+  <a href="#returns" data-section="returns">Returns</a>
+  <a href="#finance" data-section="finance">Finance</a>
+  <a href="#learning" data-section="learning">Learning</a>
+</nav>
+
+<main class="wrap viz-root" id="main-content">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="overview">
+    <div class="hero-banner">
+      <img src="assets/images/banner.jpg" alt="E-Commerce Bench Banner" width="1800" height="766">
+    </div>
+    <h1>E-Commerce Bench</h1>
+    <p class="subtitle">A 365-Day Long-Horizon E-Commerce Simulation for LLM Agent Evaluation</p>
+    <p class="hero-links">
+      <a href="https://github.com/QwenLM/E-CommerceBench" target="_blank" rel="noopener noreferrer">Code &amp; data</a>
+      <a href="https://arxiv.org/abs/2608.30730" target="_blank" rel="noopener noreferrer">Paper (arXiv)</a>
+    </p>
+    <div class="hero-copy">
+    <p>
+      E-Commerce Bench is a comprehensive benchmark that evaluates LLM agents as autonomous online store owners.
+      Each agent independently manages store setup, supplier negotiation, inventory procurement, product pricing,
+      order fulfillment, and returns handling &mdash; with the single objective of <b>maximizing year-end total assets</b>
+      (bank balance + platform wallet + pending settlement).
+    </p>
+    <p>
+      The environment holds <b>6,886 products</b> from real e-commerce data across <b>60 categories</b>, served by
+      <b>576 suppliers</b> of which <b>152 are fraudulent</b> across 5 scam types, and a fixed year-long calendar of
+      <b>8 promotions</b> and <b>10 market events</b> &mdash; natural disasters and supply-chain shocks &mdash; that
+      continually reshapes demand. Much of it stays hidden, so the agent must learn which store types pay through
+      action alone, across up to <b>4,000 turns</b> per episode.
+    </p>
+    <p>
+      <b>Both sides of the market are deterministic.</b> Customers follow a fixed demand model, and a
+      <b>Deterministic Negotiation Kernel</b> fixes every price, concession and accept/reject decision while an LLM
+      only renders those decisions as dialogue. A sampled reply can never move a price, so a difference in outcome
+      belongs to the agent rather than to chance.
+    </p>
+    <p>
+      We evaluate <b>18 models</b> &mdash; 8 proprietary and 10 open-weight &mdash; across <b>7 vendor families</b>:
+      Anthropic (Fable5, Opus&nbsp;4.6&ndash;4.8), OpenAI (GPT&nbsp;5.5, 5.6&nbsp;Sol), Google (Gemini&nbsp;3.1&nbsp;Pro,
+      3.5&nbsp;Flash), Qwen (3.5-Plus&ndash;3.8-Max-Preview), GLM (5.1, 5.2), Kimi (K2.6, K3) and DeepSeek (V4-Pro-Preview).
+      Each model runs <b>5 independent episodes</b> in one fixed world, <b>90 episodes</b> in all, and every mean is
+      reported with its standard deviation.
+    </p>
+    </div><!-- /hero-copy -->
+    <aside class="headline" id="headlineBox" aria-label="Headline results">
+      <h2>Headline results</h2>
+      <div class="hl-row">
+        <div class="hl-lab">Top earner</div>
+        <div class="hl-val">&yen;1,431,425 <span class="mult">&times;14.3 the stake</span></div>
+        <div class="hl-sub">GPT-5.6 Sol (max)</div>
+      </div>
+      <div class="hl-row">
+        <div class="hl-lab">Best open-weight</div>
+        <div class="hl-val">&yen;416,252 <span class="mult">&times;4.2 the stake</span></div>
+        <div class="hl-sub">Qwen3.8-Max-Preview</div>
+      </div>
+      <div class="hl-row">
+        <div class="hl-lab">First to last</div>
+        <div class="hl-val">1,264&times;</div>
+        <div class="hl-sub">separates the best from the worst of the 18</div>
+      </div>
+      <div class="hl-row">
+        <div class="hl-lab">Went bankrupt</div>
+        <div class="hl-val">10 / 90</div>
+        <div class="hl-sub">episodes ended insolvent</div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="stats reveal-stagger reveal" id="stats" aria-label="Benchmark at a glance">
+    <div class="stat accent"><div class="num">365</div><div class="lab">Days</div><div class="hint">One simulated year per episode</div></div>
+    <div class="stat"><div class="num">18</div><div class="lab">Models</div><div class="hint">8 proprietary &middot; 10 open-weight</div></div>
+    <div class="stat"><div class="num">18</div><div class="lab">Tools</div><div class="hint">One shared e-commerce toolset</div></div>
+    <div class="stat"><div class="num">6,886</div><div class="lab">Product SKUs</div><div class="hint">60 categories, real catalog</div></div>
+    <div class="stat"><div class="num">576</div><div class="lab">Suppliers</div><div class="hint">424 good &middot; 152 bad</div></div>
+    <div class="stat"><div class="num">&yen;100k</div><div class="lab">Opening stake</div><div class="hint">90 episodes, one fixed world</div></div>
+  </section>
+
+  <p class="load-status" id="interactiveStatus" role="status">Loading interactive charts&hellip;</p>
+
+  <!-- ============ BALANCE CHART (hero position, animated) ============ -->
+  <section class="eval-section reveal" id="balance">
+    <div class="eval-header">
+      <h2>Overall Performance: Balance Over Time</h2>
+      <p>The primary metric &mdash; how well each agent grows its total assets over 365 simulated days.</p>
+    </div>
+    <div class="viz-card" id="balanceVizCard">
+      <div class="viz-header">
+        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+          <span class="frame-info" id="frameLabel">1 / 12</span>
+          <span class="frame-title" id="frameTitle">Simulation Starts</span>
+        </div>
+        <div class="controls">
+          <button class="ctrl-btn" id="btnPrev" type="button" title="Previous frame" aria-label="Previous moment">&#9664;</button>
+          <div class="dots" id="dots" role="group" aria-label="Timeline moments"></div>
+          <button class="ctrl-btn" id="btnNext" type="button" title="Next frame" aria-label="Next moment">&#9654;</button>
+          <button class="ctrl-btn ctrl-play" id="btnPlay" type="button" title="Play the 12-moment tour">
+            <span class="glyph" id="playGlyph">&#9654;</span><span class="txt" id="playLabel">Play the year</span>
+          </button>
+        </div>
+      </div>
+      <div class="frame-desc" id="frameDesc"></div>
+      <div class="viz-body" style="position:relative;height:500px">
+        <div id="balanceChart" style="width:100%;height:100%"></div>
+      </div>
+      <div class="event-strip" id="eventCard">
+        <span class="ev-icon" id="evIcon"></span>
+        <span class="ev-title" id="evTitle"></span>
+        <span class="ev-detail" id="evDetail"></span>
+        <a class="ev-link" id="evLink" href="#methodology">Explore details &darr;</a>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div id="balanceLegend" class="legend"></div>
+    </div>
+    <div class="legend-hint" style="margin-top:8px;text-align:center">
+      Showing the full year &middot; hit <b style="color:var(--hero)">&#9654; Play the year</b> to walk through 12 key moments &middot; click a dot to jump &middot;
+      <button type="button" id="tableToggle" class="text-button">Show data table &darr;</button>
+    </div>
+    <div id="balanceTable" style="display:none;margin-top:14px"></div>
+    <figure class="paper-fig" style="margin-top:22px">
+      <div class="plate"><img src="assets/images/event-calendar.svg" width="455" height="259" decoding="async" loading="lazy" style="max-width:660px"
+        alt="The 2026 calendar of eight promotions and ten market events"></div>
+      <figcaption><b>What the year throws at the agent.</b> Eight promotions it can opt into by choosing a discount,
+        and ten events it cannot opt out of. The calendar is fixed, identical in every episode, which is what lets
+        two models be compared on the same year. Promotion names are fictional, so a model cannot price a real
+        shopping festival from memory.</figcaption>
+    </figure>
+  </section>
+
+
+  <!-- ============ CAPABILITY PROFILE (paper Figure 2) ============ -->
+  <section class="eval-section reveal" id="profile">
+    <div class="eval-header">
+      <h2>Capability Profile: No Model Dominates</h2>
+      <p>The primary score and the six evaluation dimensions, read together instead of collapsed into one number.</p>
+    </div>
+    <div class="what-measures">
+      <b>One model per vendor family</b> &mdash; the strongest of each by mean total assets. Each axis is min-max
+      normalized over all <b>18</b> model means, so <b>1.0 is the best of the eighteen and 0 the worst</b>. Fraud
+      avoidance, solvency, execution and learning are sign-flipped, so on every axis a vertex further from the centre
+      is better. The dashed grey polygon is the 18-model median. <b>Six of the seven</b> fall below that median on at
+      least one axis.
+    </div>
+    <div class="card">
+      <div style="position:relative;height:460px"><div id="profileChart" style="width:100%;height:100%"></div></div>
+      <div class="legend-hint" style="margin-top:6px;text-align:center">
+        Click a legend entry to isolate one profile &middot; the shape, not the size, is the point
+      </div>
+    </div>
+    <div id="profileNote" class="what-measures" style="margin-top:14px"></div>
+  </section>
+
+  <!-- ============ METHODOLOGY ============ -->
+  <section class="methodology reveal" id="methodology">
+    <h2>How It Works</h2>
+    <p class="method-sub">Six design decisions that make E-Commerce Bench a demanding, reproducible testbed for autonomous agents.</p>
+    <figure class="paper-fig">
+      <div class="plate"><img src="assets/images/architecture.svg" width="552" height="504" decoding="async" loading="lazy" style="max-width:640px"
+        alt="Four-layer architecture: agent loop, tool layer, environment layer, data layer"></div>
+      <figcaption><b>The four layers.</b> An <b>agent loop</b> carries turn-based control, context management and
+        persistent memory; a <b>tool layer</b> holds the 18 e-commerce tools; under both sits a deterministic
+        <b>environment layer</b> &mdash; the sales-and-economy engine beside the two-layer negotiation engine &mdash;
+        computing over a <b>data layer</b> derived from a real e-commerce platform.</figcaption>
+    </figure>
+    <div class="method-grid reveal-stagger">
+      <div class="method-card">
+        <h3>Agent as Owner</h3>
+        <p>The agent is handed a merchant account, &yen;100,000 and the 2026 calendar. It opens up to 4 stores of the 12 types on offer, researches the market, sources by negotiating, prices goods, fulfils orders and handles returns. No human guidance and no pre-scripted strategy; looking something up costs the same simulated minutes as acting, so watching everything is not an option.</p>
+      </div>
+      <div class="method-card">
+        <h3>Deferred Cash</h3>
+        <p>Revenue flows through an escrow settlement pipeline: sale &rarr; shipment &rarr; pending settlement &rarr; platform wallet &rarr; bank. Every cost hits the bank the day it is incurred, and the agent must actively withdraw to stay solvent &mdash; so a profitable plan can still run out of cash. Ten of the 90 episodes ended in bankruptcy.</p>
+      </div>
+      <div class="method-card">
+        <h3>576 Suppliers (152 Fraudulent)</h3>
+        <p>Each supplier serves one category. 152 bad suppliers employ 5 fraud types: VIP fee extortion, quantity bait-and-switch, quality downgrade, fake urgency, and future discount traps. Detecting fraud means spending less on bad suppliers.</p>
+      </div>
+      <div class="method-card">
+        <h3>Information Asymmetry</h3>
+        <p>Agents see product listings but never a supplier's private cost floor or fraud status. Every price, concession and accept/reject decision comes from a <b>Deterministic Negotiation Kernel</b>, which extends the negotiation-partner design of TERMS-Bench to repeated, cross-supplier bargaining. A separate LLM only <em>renders</em> those fixed decisions as dialogue, so bargaining stays in natural language while sampling can never move a price.</p>
+      </div>
+      <div class="method-card">
+        <h3>Seasonal Economy</h3>
+        <p>Demand combines price elasticity, weekday, seasonality, 8 scheduled promotions (up to 3.5&times;), 10 market events and store reputation. Its only randomness is seeded from the episode, so runs reproduce exactly. Agents that fail to stock ahead of a peak miss the revenue window, and money leaves the bank the day an order is signed but returns weeks later.</p>
+      </div>
+      <div class="method-card">
+        <h3>Seven Readings, Not One</h3>
+        <p>The primary score is <b>end-of-year total assets</b> (bank + platform wallet + pending settlement). Six dimensions are read beside it: <b>negotiation quality</b>, <b>fraud avoidance</b>, <b>cash flow and solvency</b>, <b>operational efficiency</b>, <b>operations execution</b> and <b>learning over the horizon</b>. No single model leads all seven.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DAY IN THE LIFE ============ -->
+  <section class="eval-section reveal" id="daylife">
+    <div class="eval-header">
+      <h2>A Day in the Life</h2>
+      <p>Follow an agent through a typical business day &mdash; from market research to cash withdrawal.</p>
+    </div>
+    <div class="what-measures">
+      <b>Real tool calls</b> extracted from a Qwen3.8-Max-Preview trajectory. Each step shows the actual arguments the agent passed
+      and the result it received. This is the agent&rsquo;s complete operational loop &mdash; the same 18 tools are available
+      to all 18 models.
+    </div>
+    <figure class="paper-fig">
+      <div class="plate"><img src="assets/images/agent-loop.svg" width="830" height="449" decoding="async" loading="lazy" style="max-width:840px"
+        alt="One turn of the agent loop, agent side against environment side"></div>
+      <figcaption><b>One turn.</b> The model emits reasoning and a batch of tool calls; the batch runs in order,
+        each call charging simulated minutes against a 600-minute day. Once the clock passes 18:00 the whole day
+        posts at once and the day's news is appended to the response. Nothing is evicted from the transcript until
+        it passes 120,000 tokens.</figcaption>
+    </figure>
+    <!-- Visual flow diagram -->
+    <div class="daylife-flow" id="daylifeFlow"></div>
+    <!-- Detailed timeline -->
+    <div class="card" id="daylifeContent"></div>
+  </section>
+
+  <!-- ============ NEGOTIATION IN ACTION ============ -->
+  <section class="eval-section reveal" id="nego-compare">
+    <div class="eval-header">
+      <h2>Negotiation in Action</h2>
+      <p>Side-by-side comparison of how different models negotiate with suppliers &mdash; same task, different strategies.</p>
+    </div>
+    <div class="what-measures">
+      <b>Real transcripts</b> from actual simulation runs. Each model initiates contact with a supplier, requests a catalog,
+      and negotiates prices. Notice the differences in tone, strategy, and use of the <code>negotiate</code> JSON protocol.
+    </div>
+    <div class="card">
+      <div class="model-tabs" id="negoLeftTabs"></div>
+      <div class="model-tabs" id="negoRightTabs" style="margin-bottom:0"></div>
+    </div>
+    <div class="transcript-compare" id="negoCompareGrid">
+      <div class="transcript-card" id="negoLeft"></div>
+      <div class="transcript-card" id="negoRight"></div>
+    </div>
+    <div class="traj-evidence" id="negoCompareInsight"></div>
+  </section>
+
+  <!-- ============ NEGOTIATION ============ -->
+  <section class="eval-section reveal" id="nego">
+    <div class="eval-header">
+      <h2>Negotiation Ability</h2>
+      <p>Assessing how effectively each agent bargains with suppliers to secure lower purchase prices.</p>
+    </div>
+    <div class="what-measures">
+      <b>What this measures:</b> Surplus Efficiency (SE+) across 5 supplier personality families quantifies how much of the
+      negotiable price range the agent captures. The learning curves show whether agents improve their bargaining
+      strategy through repeated interactions with the same supplier.
+    </div>
+    <div class="row">
+      <div class="card">
+        <h2 class="sec">Negotiation Efficiency Radar (by Supplier Family)</h2>
+        <p class="sec-sub">Average SE+ against each of the 5 honest supplier personalities (higher = better at bargaining); the adversarial family is excluded.
+        <b>Four models are shown by default</b> &mdash; the top earner, the best and weakest negotiators, and Qwen3.8-Max-Preview. Click any legend entry to add or remove a model.</p>
+        <div id="radarChart" class="chart" style="height:480px"></div>
+      </div>
+
+    </div>
+    <figure class="paper-fig">
+        <div class="plate"><img src="assets/images/negotiation-dynamics.svg" width="457" height="168" decoding="async" loading="lazy" style="max-width:920px"
+          alt="One negotiation session converging, and repeat deals with the anchor lost versus held"></div>
+        <figcaption><b>Deal anatomy, and what happens over a year.</b> (a) One session: the supplier walks its quote
+          down from &yen;131.44 while the agent walks up from &yen;102, and the supplier accepts at &yen;116.74 &mdash;
+          both sides converge, neither reaches the other&rsquo;s limit. (b) and (c) are the same pair bought again and
+          again: in (b) the agent loses its own best price and drifts upward, in (c) it holds it and keeps closing near
+          the floor. That difference is what <a href="#learning" style="color:var(--hero)">AnchorRatio</a> scores.</figcaption>
+      </figure>
+    <div class="row">
+      <div class="card" style="grid-column:1/-1">
+        <h2 class="sec">Price Learning Curves</h2>
+        <p class="sec-sub">Each chart tracks the deal price the agent negotiates for <b>the same SKU with the same supplier</b> across successive rounds. The <span style="color:var(--hero)">&#9679;</span> solid line shows <b>Qwen3.8-Max-Preview</b> discovering lower prices over time, while the <span style="color:#999">&#9671;</span> dashed gray line shows a weaker model that never works the price down. <span style="color:#c76a1a">&#9733;</span> Orange step-line = best price so far. <span style="color:#2ea63c;opacity:.7">Green dashed</span> = reference price, <span style="color:#eb9b34;opacity:.7">orange dashed</span> = cost floor.</p>
+        <div id="negoTraceGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FRAUD ============ -->
+  <section class="eval-section reveal" id="fraud">
+    <div class="eval-header">
+      <h2>Fraud Detection</h2>
+      <p>Evaluating each agent's ability to identify and avoid fraudulent suppliers.</p>
+    </div>
+    <div class="what-measures">
+      <b>What this measures:</b> The share of total procurement spend directed to the 152 bad suppliers. Lower is better &mdash;
+      an agent that recognizes scams spends less on fraudulent suppliers. The breakdown by fraud type reveals which
+      scam patterns each model is most vulnerable to.
+    </div>
+    <div class="card" id="fraudCaseStudy">
+      <h2 class="sec">Case Study: Spotting a Fake-Urgency Scam</h2>
+      <p class="sec-sub">A real encounter between an agent and a fraudulent supplier, with the tell-tale phrases marked in place.</p>
+      <div id="fraudCaseContent"></div>
+    </div>
+    <div class="metric-row" id="fraudMetrics"></div>
+    <div class="card">
+      <h2 class="sec">Bad Supplier Spend Share <span class="pill">Lower is better</span></h2>
+      <p class="sec-sub">Spend on 152 bad suppliers / total procurement spend. Design principle: detecting fraud = spending less on bad suppliers.</p>
+      <div id="fraudShareChart" class="chart" style="height:360px"></div>
+    </div>
+  </section>
+
+  <!-- ============ TOOLS ============ -->
+  <section class="eval-section reveal" id="tools">
+    <div class="eval-header">
+      <h2>Tool Usage</h2>
+      <p>Analyzing how agents utilize the 18 available tools to operate their businesses.</p>
+    </div>
+    <div class="what-measures">
+      <b>What this measures:</b> The frequency and variety of tool calls across all 18 available actions. Effective agents
+      use the right tools at the right time &mdash; frequent chatbox usage indicates active negotiation, while
+      balanced use of inventory, pricing, and financial tools suggests operational competence.
+    </div>
+    <div class="card">
+      <h2 class="sec">Tool Usage</h2>
+      <p class="sec-sub">Click a tool to view: left = per-model average call count (Qwen3.8-Max-Preview highlighted), right = real call example (from Qwen3.8-Max-Preview trajectory).</p>
+      <div class="toolbtns" id="toolBtns"></div>
+      <div class="row two">
+        <div><div id="toolChart" class="chart" style="height:420px"></div></div>
+        <div class="example" id="toolExample"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEADERBOARD ============ -->
+  <section class="eval-section reveal" id="terms">
+    <div class="eval-header">
+      <h2>Negotiation Leaderboard</h2>
+      <p>Comprehensive ranking across all negotiation metrics.</p>
+    </div>
+    <div class="what-measures">
+      <b>What this measures:</b> CSE+ = the share of the bargaining range the buyer keeps on the honest deals it closes.
+      %Oracle = realized surplus against closing every honest deal at the supplier's floor. Rounds to Deal = message turns per closed deal.
+      AnchorRatio = overpayment on repeat orders against a reshuffling of the agent's own past quotes, so lower is better and 1.0 is chance.
+    </div>
+    <div class="card">
+      <h2 class="sec">Negotiation Metrics Leaderboard</h2>
+      <p class="sec-sub">Click column headers to sort. All values are 5-run averages.</p>
+      <div class="tb-wrap"><table class="tb" id="termsTable"></table></div>
+      <p class="note">Qwen3.8-Max-Preview row highlighted.</p>
+    </div>
+  </section>
+
+  <!-- ============ RETURNS ============ -->
+  <section class="eval-section reveal" id="returns">
+    <div class="eval-header">
+      <h2>Returns &amp; Inventory Management</h2>
+      <p>How well agents manage product quality, shipping speed, and warehouse inventory levels.</p>
+    </div>
+    <div class="what-measures">
+      <b>What this measures:</b> Return rate decomposes into natural (unavoidable) and controllable (caused by pricing, shipping speed,
+      or quality decisions). Lower controllable returns indicate better sourcing and operational decisions.
+    </div>
+    <div class="card">
+      <h2 class="sec">Return Rate &amp; Refund Loss</h2>
+      <p class="sec-sub">Actual return rate (bars) and refund losses (&yen;, dots).</p>
+      <div id="returnRateChart" class="chart" style="height:380px"></div>
+    </div>
+    <div class="metric-row" id="returnMetrics"></div>
+  </section>
+
+  <!-- ============ FINANCE ============ -->
+  <section class="eval-section reveal" id="finance">
+    <div class="eval-header">
+      <h2>Financial Discipline</h2>
+      <p>Measuring financial stability, risk management, and operational consistency.</p>
+    </div>
+    <div class="what-measures">
+      <b>What this measures:</b> Peak drawdown reveals the worst balance decline from peak to trough &mdash; lower means
+      more resilient. Bankruptcy counts (triggered by 10 consecutive days of negative bank balance) indicate
+      fundamental financial mismanagement.
+    </div>
+    <figure class="paper-fig">
+      <div class="plate"><img src="assets/images/cash-cycle.svg" width="459" height="262" decoding="async" loading="lazy" style="max-width:660px"
+        alt="Three-account structure and the cash cycle of a single order"></div>
+      <figcaption><b>Why a profitable plan still runs out of cash.</b> (a) Revenue lands in escrow, settles to the
+        platform wallet nine days after shipment, and only reaches the bank when the agent explicitly withdraws,
+        while every cost leaves the bank the day it falls due. (b) One real order: &yen;2,447 out on day 0, first
+        cash back on day 16 &mdash; working capital locked for sixteen days.</figcaption>
+    </figure>
+    <div class="row two">
+      <div class="card">
+        <h2 class="sec">Max Drawdown <span class="pill">Lower is better</span></h2>
+        <p class="sec-sub">Largest peak-to-trough fall in total assets, as a share of the episode&rsquo;s own peak. Paper Table 2.</p>
+        <div id="drawdownChart" class="chart" style="height:380px"></div>
+      </div>
+      <div class="card">
+        <h2 class="sec">Bankrupt Runs (out of 5)</h2>
+        <p class="sec-sub">Runs where 10 consecutive days of negative balance triggered bankruptcy. 0 = financially stable across all runs.</p>
+        <div id="bankruptChart" class="chart" style="height:380px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEARNING OVER THE HORIZON (paper D6) ============ -->
+  <section class="eval-section reveal" id="learning">
+    <div class="eval-header">
+      <h2>Learning over the Horizon</h2>
+      <p>The one thing a year-long task exists to expose &mdash; and the dimension the field is weakest at.</p>
+    </div>
+    <div class="what-measures">
+      When an agent re-orders the same item from the same supplier, does it pay <em>less</em> than last time?
+      <b>AnchorRatio</b> answers that against the fairest possible baseline: the agent&rsquo;s <b>own</b> past quotes for
+      that pair, reshuffled. <b>1.0 means the order the prices arrived in cost exactly what a random order of them
+      would</b> &mdash; no learning, no anchoring. Below 1.0 the agent got cheaper over the year; above 1.0 it held an
+      early anchor and paid <em>more</em> than chance. Measured over <b>8,647 re-orders</b> across
+      <b>2,230 repeat (supplier, SKU) pairs</b> in the 90 episodes.
+    </div>
+    <div class="card">
+      <h2 class="sec">AnchorRatio by Model <span class="pill">Lower is better &middot; 1.0 = no better than chance</span></h2>
+      <p class="sec-sub">Bars are coloured by significance against each model&rsquo;s own permutation null
+        (|z| &gt; 1.96, two-sided 5%): <b style="color:var(--good)">green</b> beat its own shuffle,
+        <b style="color:var(--bad)">red</b> lost to it, grey is indistinguishable.</p>
+      <div style="position:relative;height:520px"><div id="anchorChart" style="width:100%;height:100%"></div></div>
+      <div class="legend-hint" style="margin-top:2px;display:flex;justify-content:space-between;max-width:760px;margin-left:auto;margin-right:auto">
+        <span>&larr; cheaper on re-orders than its own reshuffled quotes</span>
+        <span>paid more than a random ordering would &rarr;</span>
+      </div>
+    </div>
+    <div class="stats reveal-stagger" id="learningStats" style="margin-top:4px"></div>
+    <div class="what-measures">
+      <b>Read the direction, not just the absence.</b> Fifteen of the eighteen miss their own permutation null by more
+      than two standard deviations <em>in the expensive direction</em> &mdash; that is not a failure to learn, it is a
+      systematic unrevised anchor on an early price. Only <b>Qwen3.8-Max-Preview</b> beats its own shuffled ordering
+      significantly, and it is also the only model holding a positive per-day surplus trend. Two mechanisms the
+      benchmark does not separate: context eviction destroys the tool result that carried a price already won, and the
+      memory store that survives eviction is barely used.
+    </div>
+  </section>
+
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <p><b>E-Commerce Bench</b> &mdash; A 365-day long-horizon e-commerce simulation for evaluating LLM agents.</p>
+    <p>18 models &middot; 7 vendor families &middot; 576 suppliers &middot; 5 fraud types &middot; 7 evaluation axes &middot; 5 runs per model</p>
+    <p><a href="https://arxiv.org/abs/2608.30730">Paper</a> &middot; <a href="https://github.com/QwenLM/E-CommerceBench">Code &amp; data</a> &middot; Apache-2.0</p>
+  </footer>
+
+</main>
+
+<script>
+  /* Keep the paper summary immediately paintable; load the charting runtime after the
+     browser has rendered the static content once. */
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const showLoadError = () => {
+      const status = document.getElementById('interactiveStatus');
+      if (status) status.textContent = 'Interactive charts could not load. Please refresh the page.';
+    };
+    const charts = document.createElement('script');
+    charts.src = 'assets/js/echarts.min.js';
+    charts.onerror = showLoadError;
+    charts.onload = () => {
+      const app = document.createElement('script');
+      app.src = 'assets/js/app.min.js';
+      app.onerror = showLoadError;
+      document.body.appendChild(app);
+    };
+    document.body.appendChild(charts);
+  }));
+</script>
+</body>
+</html>

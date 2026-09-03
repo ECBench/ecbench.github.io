@@ -1,0 +1,16 @@
+{
+  "name": "E-Commerce Bench",
+  "short_name": "ECBench",
+  "description": "A 365-day long-horizon e-commerce simulation for LLM agent evaluation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fcfcfb",
+  "theme_color": "#2a78d6",
+  "icons": [
+    {
+      "src": "/assets/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
