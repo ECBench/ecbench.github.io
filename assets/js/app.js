@@ -15,6 +15,10 @@ const COLORS = {
   qwen37:['#4507A7','#BA92F7'],             // Qwen
   gemini31p:['#0B399E','#91B1F4'],          // Gemini
   glm52max:['#269DE1','#319CDA'],           // GLM
+  glm53high:['#2563EB','#60A5FA'],          // GLM
+  glm53max:['#7C3AED','#A78BFA'],           // GLM
+  glm53flashhigh:['#D97706','#F59E0B'],     // GLM
+  glm53flashmax:['#DC2626','#F87171'],      // GLM
   kimi:['#8F144A','#EEA4C5'],               // Kimi
   qwen36:['#AF69E7','#9A4ADA'],             // Qwen
   qwen35:['#614AB5','#9285C6'],             // Qwen
@@ -71,7 +75,7 @@ function logoSvg(modelId, size){
 }
 
 const FRAMES = [
-  {day:1,   title:'Simulation Starts',        icon:'rocket',     desc:'18 LLM agents each start with ¥100,000 seed capital for a 365-day run.', link:'#methodology'},
+  {day:1,   title:'Simulation Starts',        icon:'rocket',     desc:'22 model configurations each start with ¥100,000 seed capital for a 365-day run.', link:'#methodology'},
   {day:24,  title:'First Expansion Wave',      icon:'store',      desc:'Top agents open their 4th store, scaling operations and daily costs.', link:'#daylife'},
   {day:45,  title:'Identifying Fraud Suppliers',icon:'fraud',     desc:'576 suppliers — but 152 are fraudulent across 5 scam types.', link:'#fraud'},
   {day:62,  title:'Spring Promotion',          icon:'promo',      desc:'Spring Blossom Sale (2.5× demand). Models that stocked up see revenue surge.', link:null},
@@ -161,7 +165,8 @@ function buildHeadline(){
   const el=document.getElementById('headlineBox'); if(!el) return;
   const byAssets=[...PAPER].sort((a,b)=>b.assets-a.assets);
   const top=byAssets[0], oss=byAssets.filter(r=>r.tier==='open')[0];
-  const bankrupt=PAPER.reduce((a,r)=>a+r.bankrupt,0);
+  const bankrupt=MODELS.reduce((a,r)=>a+(r.bankrupt_count||0),0);
+  const runCount=MODELS.reduce((a,r)=>a+(r.final_balance_summary?.n||0),0);
   const exact=id=>{const m=MODELS.find(x=>x.id===id); return m?m.final_balance:null;};
   const topY=exact(top.id), ossY=exact(oss.id), lastY=exact(byAssets[byAssets.length-1].id);
   const spread=(topY&&lastY)?topY/lastY:null;
@@ -171,8 +176,8 @@ function buildHeadline(){
     {lab:'Best open-weight', val:yuan(ossY), sub:pname(oss.id),
      mult:'&times;'+(ossY/100000).toFixed(1)+' the stake'},
     {lab:'First to last', val:Math.round(spread).toLocaleString('en-US')+'&times;',
-     sub:'separates the best from the worst of the 18'},
-    {lab:'Went bankrupt', val:bankrupt+' / 90', sub:'episodes ended insolvent'}
+     sub:'separates the best from the worst of the '+MODELS.length},
+    {lab:'Went bankrupt', val:bankrupt+' / '+runCount, sub:'episodes ended insolvent'}
   ];
   el.innerHTML='<h2>Headline results</h2>'+rows.map(r=>
     `<div class="hl-row"><div class="hl-lab">${r.lab}</div>
@@ -186,11 +191,11 @@ function buildStats(){
     {num:b.num_days||365, lab:'Days', hint:'One simulated year per episode', accent:true},
     // DATA.families is the negotiation-counterpart persona list, not a vendor list, so the
     // vendor-family count comes from the roster itself (7 in the paper).
-    {num:MODELS.length, lab:'Models', hint:'8 proprietary · 10 open-weight'},
+    {num:MODELS.length, lab:'Model configs', hint:'8 proprietary · 14 open-weight'},
     {num:'18', lab:'Tools', hint:'One shared e-commerce toolset'},
     {num:b.products.toLocaleString('en-US'), lab:'Product SKUs', hint:b.categories+' categories, real catalog'},
     {num:b.suppliers, lab:'Suppliers', hint:b.good+' good · '+b.bad+' bad'},
-    {num:'¥100k', lab:'Opening stake', hint:'90 episodes, one fixed world'}
+    {num:'¥100k', lab:'Opening stake', hint:'110 episodes, one fixed world'}
   ];
   document.getElementById('stats').innerHTML = cards.map(c=>
     `<div class="stat ${c.accent?'accent':''}"><div class="num">${c.num}</div>
@@ -382,9 +387,9 @@ function updateBalanceChart(day){
       areaStyle:isHero?{color:new echarts.graphic.LinearGradient(0,0,0,1,[
         {offset:0,color:col(m.id)+'22'},{offset:1,color:col(m.id)+'02'}
       ])}:undefined,
-      /* At the resting frame 14 of the 18 finish under a quarter of the leader and bunch at
+      /* At the resting frame 14 of the original 18 finish under a quarter of the leader and bunch at
          the bottom of the axis, so their badges collide. shiftY was tried and is worse: it
-         keeps all 18 by stacking them into a column that spills below the x-axis, detached
+         keeps all labels by stacking them into a column that spills below the x-axis, detached
          from the lines it labels. Dropping the colliders instead leaves the well-separated
          leaders badged, and the legend underneath identifies every model anyway. */
       labelLayout:{hideOverlap:true},
@@ -638,7 +643,7 @@ function buildNego(){
   const rc=echarts.init(document.getElementById('radarChart')); charts.radar=rc;
   const allv=MODELS.flatMap(m=>fams.map(f=>m.radar[f])).filter(v=>v!=null);
   const maxv=Math.max(...allv), minv=Math.max(0,Math.floor(Math.min(...allv)*10)/10-0.05);
-  /* All 18 polygons at once are an unreadable tangle, so only a contrasting handful start
+  /* All polygons at once are an unreadable tangle, so only a contrasting handful start
      enabled and the legend carries the rest. The default set is picked from the paper table:
      the hero, the best and weakest negotiators by CSE+, and the top earner. */
   const byCse=[...PAPER].sort((a,b)=>b.cse-a.cse);
@@ -967,7 +972,8 @@ function selectTool(t){
   curTool=t;
   document.querySelectorAll('#toolBtns .tbtn').forEach(b=>b.classList.toggle('active',b.textContent===t));
   const k=ink();
-  const arr=[...MODELS].map(m=>({name:m.name,id:m.id,hero:m.hero,v:m.tools[t]||0})).sort((a,b)=>b.v-a.v);
+  const arr=MODELS.filter(m=>m.tools && Object.keys(m.tools).length)
+    .map(m=>({name:m.name,id:m.id,hero:m.hero,v:m.tools[t]||0})).sort((a,b)=>b.v-a.v);
   const c=charts.toolChart||echarts.init(document.getElementById('toolChart')); charts.toolChart=c;
   c.setOption({
     grid:{...baseGrid(),left:8},
@@ -1045,12 +1051,14 @@ function buildTerms(){
     {k:'final_balance',t:'Final Balance',fmt:m=>yuan(m.final_balance),val:m=>m.final_balance},
     {k:'CSE+',t:'CSE+',fmt:m=>f(m.terms['CSE+']),val:m=>m.terms['CSE+']},
     {k:'%Oracle',t:'%Oracle',fmt:m=>m.terms['%Oracle']!=null?m.terms['%Oracle'].toFixed(1):'—',val:m=>m.terms['%Oracle']},
-    {k:'rounds',t:'Rounds to Deal',fmt:m=>PAPER_ROUNDS[m.id]!=null?PAPER_ROUNDS[m.id].toFixed(2):'—',val:m=>PAPER_ROUNDS[m.id]},
+    {k:'rounds',t:'Rounds to Deal',fmt:m=>rounds(m)!=null?rounds(m).toFixed(2):'—',val:rounds},
     /* the paper ranks learning with AnchorRatio; the old column was a different,
        unpublished statistic that ordered the models differently */
-    {k:'ar',t:'AnchorRatio &darr;',fmt:m=>PAPER_AR[m.id]!=null?PAPER_AR[m.id].toFixed(3):'—',val:m=>PAPER_AR[m.id]}
+    {k:'ar',t:'AnchorRatio &darr;',fmt:m=>anchor(m)!=null?anchor(m).toFixed(3):'—',val:anchor}
   ];
   function f(v){return v==null?'—':v.toFixed(3);}
+  function rounds(m){return PAPER_ROUNDS[m.id]??m.avg_rounds_to_deal;}
+  function anchor(m){return PAPER_AR[m.id]??m.benchmark_metrics?.anchor_ratio;}
   const tbl=document.getElementById('termsTable');
   function render(){
     const arr=[...MODELS];
@@ -1111,9 +1119,10 @@ function buildReturns(){
 /* ============ FINANCE section ============ */
 function buildFinance(){
   const k=ink();
-  const ddArr=[...MODELS].filter(m=>PAPER_DD[m.id]!=null)
-    .sort((a,b)=>PAPER_DD[a.id]-PAPER_DD[b.id]);
-  hbar('drawdownChart', ddArr, m=>+(PAPER_DD[m.id]*100).toFixed(1), v=>v.toFixed(1)+'%');
+  const drawdown=m=>PAPER_DD[m.id]??m.finance?.drawdown_over_peak;
+  const ddArr=[...MODELS].filter(m=>drawdown(m)!=null)
+    .sort((a,b)=>drawdown(a)-drawdown(b));
+  hbar('drawdownChart', ddArr, m=>+(drawdown(m)*100).toFixed(1), v=>v.toFixed(1)+'%');
   const arr=sortedBy(m=>m.finance.bankrupt_runs||0,true);
   const bc=echarts.init(document.getElementById('bankruptChart')); charts.bankrupt=bc;
   bc.setOption({
