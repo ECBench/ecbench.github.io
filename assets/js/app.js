@@ -4,6 +4,7 @@ const COLORS = {
   fable5:['#D97706','#F4A851'],             // Claude
   gpt55:['#087157','#57EDC9'],              // GPT
   claude_opus48:['#965101','#FBCE9B'],      // Claude
+  qwen38official:['#9333EA','#C084FC'],     // Qwen
   qwen38:['#7B2FF2','#A16EF1'],             // Qwen
   glm52high:['#0891B2','#12BBE4'],          // GLM
   kimik3:['#DB2777','#E37BA9'],             // Kimi
@@ -15,9 +16,7 @@ const COLORS = {
   qwen37:['#4507A7','#BA92F7'],             // Qwen
   gemini31p:['#0B399E','#91B1F4'],          // Gemini
   glm52max:['#269DE1','#319CDA'],           // GLM
-  glm53high:['#2563EB','#60A5FA'],          // GLM
   glm53max:['#7C3AED','#A78BFA'],           // GLM
-  glm53flashhigh:['#D97706','#F59E0B'],     // GLM
   glm53flashmax:['#DC2626','#F87171'],      // GLM
   kimi:['#8F144A','#EEA4C5'],               // Kimi
   qwen36:['#AF69E7','#9A4ADA'],             // Qwen
@@ -75,7 +74,7 @@ function logoSvg(modelId, size){
 }
 
 const FRAMES = [
-  {day:1,   title:'Simulation Starts',        icon:'rocket',     desc:'22 model configurations each start with ¥100,000 seed capital for a 365-day run.', link:'#methodology'},
+  {day:1,   title:'Simulation Starts',        icon:'rocket',     desc:'21 model configurations each start with ¥100,000 seed capital for a 365-day run.', link:'#methodology'},
   {day:24,  title:'First Expansion Wave',      icon:'store',      desc:'Top agents open their 4th store, scaling operations and daily costs.', link:'#daylife'},
   {day:45,  title:'Identifying Fraud Suppliers',icon:'fraud',     desc:'576 suppliers — but 152 are fraudulent across 5 scam types.', link:'#fraud'},
   {day:62,  title:'Spring Promotion',          icon:'promo',      desc:'Spring Blossom Sale (2.5× demand). Models that stocked up see revenue surge.', link:null},
@@ -97,11 +96,10 @@ const FRAME_ICONS = {rocket:'🚀', store:'🏪', promo:'🛍️', radar:'📊',
                fraud:'🚨', nego:'📉', disruption:'⚡', season:'🌞'};
 
 /* ============================================================================
-   Paper-sourced scores. Every value below is transcribed from the paper:
-   assets/std/cse/bad/dd/ypc/ctrl/calls/turns/bankrupt from Table 4.2 (end-of-year
-   leaderboard), and ar/z/reorders from Table D6 (learning over the horizon).
-   These are the authority for anything scored -- showcase_data.json supplies only
-   what the paper does not tabulate (365-day curves, tool mix, transcripts).
+   Benchmark scores. The original 18 rows are transcribed from the paper (Tables 4.2
+   and D6); later evaluation rows come from their validated website-data exports.
+   These compact values are the authority for scored charts; showcase_data.json also
+   supplies the 365-day curves, tool mix, and transcripts.
    Direction: assets/cse/ypc higher is better; bad/dd/ctrl/ar lower is better.
    ar = AnchorRatio (1.0 = no better than reshuffling the agent's own past quotes),
    z  = pooled anchoring z, |z| > 1.96 is the two-sided 5% threshold, positive
@@ -112,10 +110,13 @@ const PAPER = [
   {id:'fable5',        tier:'proprietary', family:'Anthropic',assets: 805, std:188, cse:0.772, bad: 3.46, dd:0.141, ypc:479, ctrl:0.22, ar:1.573, z:-8.65, rounds:4.07, reorders:636, calls:1469, turns: 945, bankrupt:0},
   {id:'gpt55',         tier:'proprietary', family:'OpenAI',   assets: 702, std:616, cse:0.700, bad:16.59, dd:0.591, ypc:192, ctrl:0.90, ar:1.043, z:-0.87, rounds:3.31, reorders:700, calls:3143, turns:1306, bankrupt:2},
   {id:'claude_opus48', tier:'proprietary', family:'Anthropic',assets: 498, std:231, cse:0.662, bad: 5.41, dd:0.130, ypc:266, ctrl:0.20, ar:1.309, z:-5.95, rounds:3.38, reorders:751, calls:1497, turns: 812, bankrupt:0},
+  {id:'qwen38official',tier:'proprietary', family:'Qwen',     assets: 472, std:165, cse:0.660, bad:18.37, dd:0.172, ypc:246, ctrl:2.88, ar:1.522, z:-8.80, rounds:3.48, reorders:746, calls:1514, turns: 714, bankrupt:0},
   {id:'qwen38',        tier:'open',        family:'Qwen',     assets: 416, std:111, cse:0.713, bad: 6.13, dd:0.242, ypc:173, ctrl:0.38, ar:0.834, z: 4.24, rounds:3.52, reorders:773, calls:1826, turns: 962, bankrupt:0},
+  {id:'glm53max',      tier:'open',        family:'GLM',      assets: 391, std:167, cse:0.668, bad:16.71, dd:0.780, ypc:193, ctrl:0.34, ar:1.493, z:-9.39, rounds:3.75, reorders:875, calls:1510, turns:1068, bankrupt:0},
   {id:'glm52high',     tier:'open',        family:'GLM',      assets: 301, std:124, cse:0.693, bad: 1.99, dd:0.127, ypc:137, ctrl:0.59, ar:1.434, z:-8.35, rounds:3.51, reorders:703, calls:1467, turns: 672, bankrupt:0},
   {id:'kimik3',        tier:'open',        family:'Kimi',     assets: 265, std:110, cse:0.632, bad: 5.87, dd:0.247, ypc:123, ctrl:2.01, ar:1.507, z:-8.50, rounds:3.33, reorders:733, calls:1334, turns: 878, bankrupt:0},
   {id:'claude_opus47', tier:'proprietary', family:'Anthropic',assets: 259, std:111, cse:0.811, bad: 0.12, dd:0.189, ypc:156, ctrl:1.75, ar:1.421, z:-2.74, rounds:3.88, reorders:222, calls:1023, turns: 432, bankrupt:0},
+  {id:'glm53flashmax', tier:'open',        family:'GLM',      assets: 258, std: 88, cse:0.729, bad:27.92, dd:0.533, ypc:136, ctrl:2.81, ar:1.460, z:-7.13, rounds:4.20, reorders:521, calls:1160, turns: 989, bankrupt:0},
   {id:'claude_opus46', tier:'proprietary', family:'Anthropic',assets: 258, std:266, cse:0.649, bad:14.98, dd:0.587, ypc:129, ctrl:0.76, ar:1.268, z:-2.83, rounds:3.54, reorders:380, calls:1221, turns: 788, bankrupt:2},
   {id:'glm51',         tier:'open',        family:'GLM',      assets: 226, std:192, cse:0.662, bad: 6.49, dd:0.231, ypc: 94, ctrl:0.09, ar:1.557, z:-7.52, rounds:3.37, reorders:496, calls:1333, turns: 852, bankrupt:0},
   {id:'deepseek',      tier:'open',        family:'DeepSeek', assets: 190, std:100, cse:0.654, bad: 8.99, dd:0.166, ypc: 68, ctrl:1.54, ar:1.235, z:-3.24, rounds:3.43, reorders:473, calls:1337, turns: 678, bankrupt:0},
@@ -187,15 +188,18 @@ function buildHeadline(){
 
 function buildStats(){
   const b=DATA.bench;
+  const proprietary=MODELS.filter(m=>m.tier==='proprietary').length;
+  const openWeight=MODELS.length-proprietary;
+  const runCount=MODELS.reduce((sum,m)=>sum+(m.final_balance_summary?.n||0),0);
   const cards=[
     {num:b.num_days||365, lab:'Days', hint:'One simulated year per episode', accent:true},
     // DATA.families is the negotiation-counterpart persona list, not a vendor list, so the
     // vendor-family count comes from the roster itself (7 in the paper).
-    {num:MODELS.length, lab:'Model configs', hint:'8 proprietary · 14 open-weight'},
+    {num:MODELS.length, lab:'Model configs', hint:proprietary+' proprietary · '+openWeight+' open-weight'},
     {num:'18', lab:'Tools', hint:'One shared e-commerce toolset'},
     {num:b.products.toLocaleString('en-US'), lab:'Product SKUs', hint:b.categories+' categories, real catalog'},
     {num:b.suppliers, lab:'Suppliers', hint:b.good+' good · '+b.bad+' bad'},
-    {num:'¥100k', lab:'Opening stake', hint:'110 episodes, one fixed world'}
+    {num:'¥100k', lab:'Opening stake', hint:runCount+' episodes, one fixed world'}
   ];
   document.getElementById('stats').innerHTML = cards.map(c=>
     `<div class="stat ${c.accent?'accent':''}"><div class="num">${c.num}</div>
@@ -387,7 +391,7 @@ function updateBalanceChart(day){
       areaStyle:isHero?{color:new echarts.graphic.LinearGradient(0,0,0,1,[
         {offset:0,color:col(m.id)+'22'},{offset:1,color:col(m.id)+'02'}
       ])}:undefined,
-      /* At the resting frame 14 of the original 18 finish under a quarter of the leader and bunch at
+      /* At the resting frame most models finish under a quarter of the leader and bunch at
          the bottom of the axis, so their badges collide. shiftY was tried and is worse: it
          keeps all labels by stacking them into a column that spills below the x-axis, detached
          from the lines it labels. Dropping the colliders instead leaves the well-separated
@@ -1145,7 +1149,7 @@ function buildFinance(){
 /* ============ Capability profile radar (paper Figure 2) ============ */
 /* Seven axes: the primary score plus the six dimensions. `flip` marks the axes the
    paper sign-flips so that outward is better on every one of them. Normalisation is
-   min-max over all 18 model means, so 1 is the best of the eighteen and 0 the worst. */
+   min-max over all model means in the current roster, so 1 is the best and 0 the worst. */
 /* Listed counter-clockwise, because ECharts places indicator[0] at the top and walks
    counter-clockwise -- which renders as the paper's clockwise-from-the-top order:
    Profit, Negotiation, Fraud avoidance, Solvency, Efficiency, Execution, Learning. */
@@ -1194,7 +1198,7 @@ function buildProfile(){
     symbolSize:5
   }));
   series.push({
-    name:'18-model median',
+    name:PAPER.length+'-model median',
     value: medianVec,
     lineStyle:{width:1.6, type:'dashed', color:k.muted},
     itemStyle:{color:k.muted}, symbolSize:0, areaStyle:{opacity:0}
@@ -1223,14 +1227,13 @@ function buildProfile(){
     series:[{type:'radar', emphasis:{focus:'series', areaStyle:{opacity:0.16}}, data:series}]
   });
 
-  /* count how many of the drawn seven sit below the 18-model median somewhere -- the
-     paper's "six of the seven" line, recomputed rather than hard-coded */
+  /* Count how many of the drawn seven sit below the current-roster median somewhere. */
   const below = reps.filter(r =>
     PROFILE_AXES.some((ax,i)=> norms[i](r[ax.key]) < medianVec[i]));
   const clean = reps.filter(r=>!below.includes(r)).map(r=>pname(r.id));
   const note=document.getElementById('profileNote');
   if(note) note.innerHTML =
-    '<b>'+below.length+' of the '+reps.length+'</b> models drawn here fall below the 18-model median on at least one axis'
+    '<b>'+below.length+' of the '+reps.length+'</b> models drawn here fall below the '+PAPER.length+'-model median on at least one axis'
     + (clean.length ? '. The only exception is <b>'+clean.join(', ')+'</b>, which sits at or above the median on all seven.'
                     : '.');
 }
