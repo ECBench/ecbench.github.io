@@ -400,5 +400,3 @@ table.tb td .mdot{display:inline-block; width:9px; height:9px; border-radius:3px
   .method-grid{grid-template-columns:1fr}
   .topnav{padding:0 12px}
 }
-
-.research-video{max-width:960px;margin:35px auto 50px;scroll-margin-top:90px}.research-video h2{font-size:clamp(1.6rem,3vw,2.3rem);letter-spacing:-.04em;margin:0 0 10px}.research-video p{color:var(--muted);font-size:14px;margin:0 0 20px}.research-video iframe{display:block;width:100%;aspect-ratio:16/9;min-height:200px;border:0;border-radius:var(--radius);background:var(--ink)}.research-video>a{display:inline-block;margin-top:12px;color:var(--hero);font-size:13px}
